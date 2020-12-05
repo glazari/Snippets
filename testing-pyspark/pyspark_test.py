@@ -31,6 +31,7 @@ def assert_dataframes_equal(df, df_ref, order_cols=None):
     expected = expected_df.collect()
     if actual != expected:
         print_full_diff(expected_df, actual_df)
+        print_minimal_diff(actual, expected, cols)
         assert False
     assert True
 
@@ -87,3 +88,20 @@ def print_column_diff(expected_df, actual_df):
     print("#" * 40, "\n# Missing Columns", "\n" + "#" * 39)
     missing_cols = set(expected_df.columns) - set(actual_df.columns)
     print(f"\nMissing: {missing_cols}\n")
+
+
+def print_minimal_diff(actual, expected, cols):
+    diff_df = []
+    diff_reff = []
+    diff_cols = set()
+    for a_row, e_row in zip(actual, expected):
+        if a_row != e_row:
+            diff_df.append(a_row)
+            diff_reff.append(e_row)
+            d_cols = [c for c in cols if a_row[c] != e_row[c]]
+            diff_cols.update(d_cols)
+    print("#" * 40, "\n# Min Diff", "\n" + "#" * 39)
+    print("Expected")
+    spark.createDataFrame(diff_reff).select(*diff_cols).show()
+    print("Got")
+    spark.createDataFrame(diff_df).select(*diff_cols).show()
