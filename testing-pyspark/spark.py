@@ -22,8 +22,8 @@ def test_transform():
     spark = SparkSession.builder.master("local").getOrCreate()
 
     sales = (
-        ("transaction1", "10.0", "user1"),
-        ("transaction2", "20.0", "user2"),
+        ("transaction1", 10.0, "user1"),
+        ("transaction2", 20.0, "user2"),
     )
     schema = "transaction_id: string,  price: double, user_id: string"
     sales = spark.createDataFrame(sales, schema=schema)
@@ -36,8 +36,8 @@ def test_transform():
     users = spark.createDataFrame(users, schema=schema)
 
     expected = (
-        ("transaction1", "10.0", "user1", "John"),
-        ("transaction2", "20.0", "user2", "Rebeca"),
+        ("transaction1", 10.0, "user1", "John"),
+        ("transaction2", 20.0, "user2", "Rebeca"),
     )
     schema = "transaction_id: string, name: string"
 
